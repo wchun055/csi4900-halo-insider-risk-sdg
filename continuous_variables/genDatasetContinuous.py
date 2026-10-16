@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 
 MAX_TIME_STEPS = 150
 
-mimic_dir = "./data/"
+mimic_dir = "./continuous_variables/data/"
 timeseries_dir = "../../Code/mimic3-benchmarks/data/root/all/"
 #valid_subjects = os.listdir(timeseries_dir)
 patientsFile = mimic_dir + 'PATIENTS.csv'
