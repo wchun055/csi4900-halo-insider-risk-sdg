@@ -2,3 +2,4 @@ pandas
 tqdm
 PyYAML
 scikit-learn
+requests
