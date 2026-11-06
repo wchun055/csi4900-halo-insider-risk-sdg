@@ -14,15 +14,15 @@ model = HALOModel(config).to(device)
 checkpoint = torch.load('./save/halo_model', map_location=torch.device(device))
 model.load_state_dict(checkpoint['model'])
 
-labelProbs = pickle.load(open('./discretized_data/labelProbs.pkl', 'rb'))
-idxToId = pickle.load(open('discretized_data/idxToId.pkl', 'rb'))
-idToLab = pickle.load(open('discretized_data/idToLab.pkl', 'rb'))
-beginPos = pickle.load(open('discretized_data/beginPos.pkl', 'rb')) 
-isCategorical = pickle.load(open('discretized_data/isCategorical.pkl', 'rb')) 
-possible_values = pickle.load(open('discretized_data/possibleValues.pkl', 'rb'))
-discretization = pickle.load(open('discretized_data/discretization.pkl', 'rb'))
-indexToCode = pickle.load(open('discretized_data/indexToCode.pkl', 'rb'))
-idToLabel = pickle.load(open('discretized_data/idToLabel.pkl', 'rb'))
+labelProbs = pickle.load(open('./data/labelProbs.pkl', 'rb'))
+idxToId = pickle.load(open('./data/idxToId.pkl', 'rb'))
+idToLab = pickle.load(open('./data/idToLab.pkl', 'rb'))
+beginPos = pickle.load(open('./data/beginPos.pkl', 'rb')) 
+isCategorical = pickle.load(open('./data/isCategorical.pkl', 'rb')) 
+possible_values = pickle.load(open('./data/possibleValues.pkl', 'rb'))
+discretization = pickle.load(open('./data/discretization.pkl', 'rb'))
+indexToCode = pickle.load(open('./data/indexToCode.pkl', 'rb'))
+idToLabel = pickle.load(open('./data/idToLabel.pkl', 'rb'))
 
 def sample_sequence(model, length, context, batch_size, device='cuda', sample=True):
   empty = torch.zeros((1,1,config.total_vocab_size), device=device, dtype=torch.float32).repeat(batch_size, 1, 1)
@@ -90,7 +90,7 @@ def convert_ehr(ehrs, index_to_code=None):
   return ehr_outputs
 
 # Generate Synthetic EHR dataset
-totEHRs = len(pickle.load(open('data/trainDataset.pkl', 'rb')))
+totEHRs = len(pickle.load(open('./data/trainData.pkl', 'rb')))
 stoken = np.zeros(config.total_vocab_size)
 stoken[config.code_vocab_size+config.lab_vocab_size+config.continuous_vocab_size+config.label_vocab_size] = 1
 synthetic_ehr_dataset = []
