@@ -1,3 +1,4 @@
 data/
 *.pkl
-r3.1/
+*.bz2
+local_print_data_results.txt
