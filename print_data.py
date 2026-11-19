@@ -41,8 +41,9 @@ def list_files():
     for f in files:
         rows.append([str(f["id"]), f["name"], f"{f['size'] / 1e9:.2f}", f["download_url"]])
     print_table(rows)
-'''
 
+    return files
+'''
 def returnFiles():
     api = f"https://api.figshare.com/v2/articles/{ARTICLE_ID}"
     resp = requests.get(api, headers=HEADERS, timeout=30)
@@ -132,7 +133,7 @@ def show(name, f):
         schema.append([col, infer_type(values),
                        str(sum(v == "" for v in values)), trunc(example)])
 
-    print(f"\nSchema (Inferred From Rirst {len(data)} Rows):")
+    print(f"\nSchema (Inferred From First {len(data)} Rows):")
     print_table(schema)
 
 """
@@ -155,13 +156,13 @@ def main():
         print("Content-Length:", r.headers.get("Content-Length"))
         print("Final File:", r.url.split("?")[0])  # Strips the signed query string.
 
-        # Unpack and recoginize seperate files we are reading.
+        # Unpack and recognize seperate files we are reading.
         with bz2.BZ2File(r.raw) as bz, tarfile.open(fileobj=bz, mode="r|") as tar:
             for member in tar: # For each file in the .tar.
                 if not member.isfile() or not member.name.endswith(".csv"): # Skip non CSV files.
                     continue
 
-                # Clean the filenames -> r5.2/logon.csv -> logon.csv. (For target variable setting.
+                # Clean the filenames -> r5.2/logon.csv -> logon.csv. (For target variable setting.)
                 base = member.name.rsplit("/", 1)[-1]
                 if "decoy" in base:
                     continue
