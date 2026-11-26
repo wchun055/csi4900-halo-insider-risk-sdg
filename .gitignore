@@ -1,0 +1,4 @@
+data/
+*.pkl
+*.bz2
+local_print_data_results.txt
