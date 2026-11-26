@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score
 
 config = HALOConfig()
-train_ehr_dataset = pickle.load(open(f'./data/trainDataset.pkl', 'rb'))
+train_ehr_dataset = pickle.load(open(f'./data/trainData.pkl', 'rb'))
 halo_ehr_dataset = pickle.load(open(f'./results/datasets/haloDataset_converted.pkl', 'rb'))
 
 for p in train_ehr_dataset:
@@ -25,9 +25,9 @@ for p in train_ehr_dataset:
         currLab += 1
   p['visits'] = new_visits
 
-discretization = pickle.load(open(f'discretized_data/discretization.pkl', 'rb'))
-is_categorical_channel = pickle.load(open(f'discretized_data/isCategorical.pkl', 'rb'))
-idToLab = pickle.load(open(f'discretized_data/idToLab.pkl', 'rb'))
+discretization = pickle.load(open(f'data/discretization.pkl', 'rb'))
+is_categorical_channel = pickle.load(open(f'data/isCategorical.pkl', 'rb'))
+idToLab = pickle.load(open(f'data/idToLab.pkl', 'rb'))
 
 #####################
 ### Dataset Stats ###
@@ -77,7 +77,7 @@ def generate_statistics(ehr_dataset):
                 for c in v[0]:
                     visit_code_counts[c] = 1 if c not in visit_code_counts else visit_code_counts[c] + 1
                     patient_codes.add(c)
-                for cs in itertools.combinations(v[1],2):
+                for cs in itertools.combinations(v[0],2): # ====was [1],2=====
                     cs = list(cs)
                     cs.sort()
                     cs = tuple(cs)
@@ -104,14 +104,21 @@ def generate_statistics(ehr_dataset):
 def generate_plots(stats1, stats2, label1, label2, types=["Per Record Code Probabilities", "Per Visit Code Probabilities", "Per Record Bigram Probabilities", "Per Visit Bigram Probabilities"]):
     for i in tqdm(range(config.label_vocab_size, config.label_vocab_size + 1)):
         label = i
+        #print("LABEL: " + str(label))
         data1 = stats1[label]["Probabilities"]
+        #print("DATA1: " + str(data1))
         data2 = stats2[label]["Probabilities"]
+        #print("DATA2: " + str(data2))
         for t in types:
             probs1 = data1[t]
+            #print("PROBS 1: " + str(probs1))
             probs2 = data2[t]
+            #print("PROBS 1: " + str(probs2))
             keys = set(probs1.keys()).union(set(probs2.keys()))
             values1 = [probs1[k] if k in probs1 else 0 for k in keys]
+            #print("values1 CREATED " + str(values1))
             values2 = [probs2[k] if k in probs2 else 0 for k in keys]
+            #print("values2 CREATED " + str(values2))
 
             # Plot With Adjusted Max
             plt.clf()
@@ -247,15 +254,18 @@ plt.plot([0,max([max(y), max(X)])], [0,max([max(y), max(X)])], 'k-', zorder=0)
 plt.legend()
 plt.savefig(f'results/dataset_stats/plots/lab_values.png')
 
-# Plot lab value probabilities
+#Plot lab value probabilities
 for m in range(len(idToLab)):
-  try:
-    df = pd.DataFrame({'Train': pd.Series(labs['Train']['All Values'][m]), 'HALO': pd.Series(labs['HALO']['All Values'][m])})
-    df.plot.kde()
-    plt.xlim(min(labs['Train']['All Values'][m] + labs['HALO']['All Values'][m]) - 1,max(labs['Train']['All Values'][m] + labs['HALO']['All Values'][m]) + 1)
-    plt.xlabel('Lab Index')
-    plt.title(f'{idToLab[m]} Index Probability Density')
-    plt.savefig(f"results/dataset_stats/plots/labProbDist_{m}.png")
-    plt.clf()
-  except:
-      print(f"No Values for {m}")
+    try:
+        df = pd.DataFrame({
+            'Train': pd.Series(labs['Train']['All Values'][m]), 
+            'HALO': pd.Series(labs['HALO']['All Values'][m])
+        })
+        df.plot.kde()
+        plt.xlim(min(labs['Train']['All Values'][m] + labs['HALO']['All Values'][m]) - 1,max(labs['Train']['All Values'][m] + labs['HALO']['All Values'][m]) + 1)
+        plt.xlabel('Lab Index')
+        plt.title(f'{idToLab[m]} Index Probability Density')
+        plt.savefig(f"results/dataset_stats/plots/labProbDist_{m}.png")
+        plt.clf()
+    except:
+        print(f"No Values for {m}")
